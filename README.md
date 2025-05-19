@@ -1,1 +1,1 @@
-# BrightChoiceSWP_BE
+# SWP_BE
