@@ -1,0 +1,25 @@
+# Stage 1: Build application
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /source
+
+# Copy project files
+COPY *.sln .
+# Copy all source code
+COPY Api/. ./Api/
+COPY Application/. ./Application/
+COPY Core/. ./Core/
+COPY Domain/. ./Domain/
+COPY Infrastructure/. ./Infrastructure/
+COPY Persistence/. ./Persistence/
+RUN dotnet restore
+RUN dotnet publish -c Debug -o /app --no-restore
+# Stage 2: Create runtime image
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
+WORKDIR /app
+COPY --from=build /app ./
+EXPOSE 5150
+ENV TZ=Asia/Ho_Chi_Minh
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+ENV ASPNETCORE_URLS="http://*:5150;"
+ENV ASPNETCORE_ENVIRONMENT=Development
+ENTRYPOINT ["dotnet", "Api.dll"]

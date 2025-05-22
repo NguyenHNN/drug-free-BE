@@ -1,0 +1,5 @@
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=localhost,1433;Database=DrugFree;User Id=sa_df;Password=123456_df;TrustServerCertificate=True;"
+  }
+}
