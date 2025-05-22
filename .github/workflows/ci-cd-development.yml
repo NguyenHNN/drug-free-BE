@@ -39,4 +39,4 @@ jobs:
             docker rm drugfree || true
             docker image rm beo2000/drugfree:latest || true
             docker pull beo2000/drugfree:latest
-            docker run -d -p 5283:5283 --name drugfree beo2000/drugfree:latest
+            docker run -d -p 5150:5150 --name drugfree beo2000/drugfree:latest
