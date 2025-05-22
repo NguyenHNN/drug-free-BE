@@ -1,0 +1,42 @@
+name: Build and Deploy to Docker on Development Environment
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: beo2000/drugfree:latest
+          file: ./Dockerfile_Development
+
+      - name: Deploy on VPS
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }} 
+          port: 22
+          script: |
+            docker stop drugfree || true
+            docker rm drugfree || true
+            docker image rm beo2000/drugfree:latest || true
+            docker pull beo2000/drugfree:latest
+            docker run -d --network=host --name drugfree beo2000/drugfree:latest
