@@ -26,19 +26,17 @@ jobs:
           push: true
           tags: beo2000/drugfree:latest
           file: ./Dockerfile_Development
-          # cache-from: type=registry,ref = khanganonymous/sbs_development:buildcache
-          # cache-to: type=registry,ref=khanganonymous/sbs_development:buildcache,mode=max
 
       - name: Deploy on VPS
         uses: appleboy/ssh-action@v0.1.6
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
-          password: ${{ secrets.VPS_PASSWORD }}
+          key: ${{ secrets.VPS_SSH_KEY }}
           port: 22
           script: |
             docker stop drugfree || true
             docker rm drugfree || true
             docker image rm beo2000/drugfree:latest || true
             docker pull beo2000/drugfree:latest
-            docker run -d --network=host --name drugfree beo2000/drugfree:latest
+            docker run -d -p 5283:5283 --name drugfree beo2000/drugfree:latest
