@@ -1,16 +1,16 @@
 using System.Linq.Expressions;
-using Data.Repositories.Interfaces;
-using Domain.Contexts;
+using Persistence.Interfaces;
+using Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 
 namespace Persistence.Implementations
 {
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
-        private readonly EvericksContext _context;
+        private readonly AppDbContext _context;
         private readonly DbSet<T> _dbSet;
 
-        public GenericRepository(EvericksContext context)
+        public GenericRepository(AppDbContext context)
         {
             _context = context;
             _dbSet = context.Set<T>();

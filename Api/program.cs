@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Persistence.Contexts;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +18,21 @@ builder.Services.AddSwaggerGen();
 // Controller support
 builder.Services.AddControllers();
 
+// Authentication
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.Authority = "https://securetoken.google.com/drug-free-auth";
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidIssuer = "https://securetoken.google.com/drug-free-auth",
+            ValidateAudience = true,
+            ValidAudience = "drug-free-auth",
+            ValidateLifetime = true
+        };
+    });
+
 var app = builder.Build();
 
 // Middleware: Swagger UI
@@ -26,7 +43,9 @@ if (app.Environment.IsDevelopment() || app.Environment.IsStaging())
 }
 
 app.UseHttpsRedirection();
+app.UseAuthentication();
 app.UseAuthorization();
+app.UseMiddleware<Infrastructure.Firebase.FirebaseAuthMiddleware>();
 app.MapControllers();
 
 app.Run();
