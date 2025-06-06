@@ -1,32 +1,46 @@
+using Application.Services.Interfaces;
+using Application.Services.Implementations;
 using Microsoft.EntityFrameworkCore;
 using Persistence.Contexts;
+using Persistence.Implementations;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Đọc connection string từ appsettings.{ENV}.json
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+// Add services to the container.
+builder.Services.AddControllers();
 
+// Configure DbContext
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(connectionString));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Swagger
+// Register repositories
+builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+
+// Register services
+builder.Services.AddScoped<IUserService, UserService>();
+
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Controller support
-builder.Services.AddControllers();
-
 var app = builder.Build();
 
-// Middleware: Swagger UI
-if (app.Environment.IsDevelopment() || app.Environment.IsStaging())
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
+
 app.UseAuthorization();
+
 app.MapControllers();
 
 app.Run();
+
+record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
+{
+    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+}

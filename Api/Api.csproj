@@ -9,6 +9,10 @@
   <ItemGroup>
     <!-- Swagger UI -->
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.4">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
 
     <!-- EF Core & Tools -->
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.4" />
@@ -17,11 +21,16 @@
     </PackageReference>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="8.1.1" />
   </ItemGroup>
+	
+	
 
   <ItemGroup>
     <!-- Reference tầng Persistence và Domain -->
     <ProjectReference Include="..\Persistence\Persistence.csproj" />
     <ProjectReference Include="..\Domain\Domain.csproj" />
+	<ProjectReference Include="..\Application\Application.csproj" />
+	<ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+
   </ItemGroup>
 
 </Project>

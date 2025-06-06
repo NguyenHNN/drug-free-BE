@@ -1,4 +1,4 @@
-﻿namespace Persistence;
+﻿namespace Core;
 
 public class Class1
 {
