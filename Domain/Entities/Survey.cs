@@ -9,7 +9,9 @@ namespace Domain.Entities
         public string Title { get; set; }
         public string Description { get; set; }
         public string Type { get; set; }
-        public int AgeGroup { get; set; }
+        public int MinAge { get; set; }
+        public int MaxAge { get; set; }
+        public bool Status { get; set; }
         public Guid CreatedBy { get; set; }
         public UserAccount Creator { get; set; }
         public ICollection<SurveyQuestion> SurveyQuestions { get; set; }

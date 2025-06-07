@@ -12,9 +12,11 @@ namespace Persistence.Configurations
             builder.Property(s => s.Title).IsRequired().HasMaxLength(255);
             builder.Property(s => s.Description).HasMaxLength(1000);
             builder.Property(s => s.Type).HasMaxLength(50);
-            builder.Property(s => s.AgeGroup).IsRequired();
+             builder.Property(s => s.MinAge).IsRequired();
+            builder.Property(s => s.MaxAge).IsRequired();
+            builder.Property(s => s.Status);
             builder.Property(s => s.CreatedBy).IsRequired();
-
+            builder.HasCheckConstraint("CK_Survey_AgeRange", "MinAge < MaxAge");
             builder.HasOne(s => s.Creator)
                 .WithMany(u => u.Surveys)
                 .HasForeignKey(s => s.CreatedBy)
