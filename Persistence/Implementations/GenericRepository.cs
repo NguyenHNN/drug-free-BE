@@ -1,13 +1,17 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
-using Persistence.Interfaces;
-using Persistence.Contexts;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Persistence.Contexts;
+using Application.Services.Interfaces;
 
 namespace Persistence.Implementations
 {
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
-        private readonly AppDbContext _context;
+        protected readonly AppDbContext _context;
         private readonly DbSet<T> _dbSet;
 
         public GenericRepository(AppDbContext context)
@@ -16,24 +20,19 @@ namespace Persistence.Implementations
             _dbSet = context.Set<T>();
         }
 
+        public async Task<T> GetByIdAsync(Guid id)
+        {
+            return await _dbSet.FindAsync(id);
+        }
+
         public async Task<IEnumerable<T>> GetAllAsync()
         {
             return await _dbSet.ToListAsync();
         }
 
-        public bool Any(Expression<Func<T, bool>> predicate)
+        public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> expression)
         {
-            return _dbSet.Any(predicate);
-        }
-
-        public IQueryable<T> Find(Expression<Func<T, bool>> expression)
-        {
-            return _dbSet.Where(expression);
-        }
-
-        public async Task<T?> GetByIdAsync(Guid id)
-        {
-            return await _dbSet.FindAsync(id);
+            return await _dbSet.Where(expression).ToListAsync();
         }
 
         public async Task AddAsync(T entity)
@@ -41,34 +40,24 @@ namespace Persistence.Implementations
             await _dbSet.AddAsync(entity);
         }
 
-        public Task AddRangeAsync(IEnumerable<T> entities)
+        public async Task AddRangeAsync(IEnumerable<T> entities)
         {
-            return _dbSet.AddRangeAsync(entities);
+            await _dbSet.AddRangeAsync(entities);
         }
 
         public void Update(T entity)
         {
-            _dbSet.Attach(entity);
-            _context.Entry(entity).State = EntityState.Modified;
+            _dbSet.Update(entity);
         }
 
-        public void UpdateRange(IEnumerable<T> entities)
-        {
-            foreach (var entity in entities)
-            {
-                _dbSet.Attach(entity);
-                _context.Entry(entity).State = EntityState.Modified;
-            }
-        }
-
-        public void Delete(T entity)
+        public void Remove(T entity)
         {
             _dbSet.Remove(entity);
         }
 
-        public void DeleteRange(IEnumerable<T> entities)
+        public void RemoveRange(IEnumerable<T> entities)
         {
             _dbSet.RemoveRange(entities);
         }
     }
-}
+} 
